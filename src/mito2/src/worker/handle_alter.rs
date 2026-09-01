@@ -300,10 +300,20 @@ impl<S: LogStore> RegionWorkerLoop<S> {
                         all_options_altered = false;
                     }
                 }
-                SetRegionOption::SkipWal => {
-                    if !current_options.skip_wal {
-                        info!("Stop writing WAL for region: {}", region.region_id);
-                        current_options.skip_wal = true;
+                SetRegionOption::SkipWal(skip_wal) => {
+                    if skip_wal != current_options.skip_wal {
+                        if skip_wal {
+                            info!(
+                                "Skipping WAL for region: {}, previous: {:?}",
+                                region.region_id, current_options.skip_wal
+                            );
+                        } else {
+                            info!(
+                                "Enabling WAL for region: {}, previous: {:?}",
+                                region.region_id, current_options.skip_wal
+                            );
+                        }
+                        current_options.skip_wal = skip_wal;
                     }
                 }
             }
@@ -325,7 +335,7 @@ fn only_enables_skip_wal(kind: &AlterKind) -> bool {
     matches!(
         kind,
         AlterKind::SetRegionOptions { options }
-            if matches!(options.as_slice(), [SetRegionOption::SkipWal])
+            if matches!(options.as_slice(), [SetRegionOption::SkipWal(true)])
     )
 }
 

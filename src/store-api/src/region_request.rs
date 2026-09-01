@@ -1458,8 +1458,8 @@ pub enum SetRegionOption {
     AutoFlushInterval(Option<Duration>),
     // Modifying the max number of rows in a parquet row group.
     MaxRowGroupRowCount(Option<usize>),
-    // Stops writing new WAL entries. This operation is irreversible.
-    SkipWal,
+    // Dynamic toggle for whether to skip writing WAL entries.
+    SkipWal(bool),
 }
 
 impl TryFrom<&PbOption> for SetRegionOption {
@@ -1517,7 +1517,12 @@ impl TryFrom<&PbOption> for SetRegionOption {
                     .ok_or_else(|| InvalidSetRegionOptionRequestSnafu { key, value }.build())?;
                 Ok(Self::MaxRowGroupRowCount(Some(row_count)))
             }
-            SKIP_WAL_KEY if value == "true" => Ok(Self::SkipWal),
+            SKIP_WAL_KEY => {
+                let skip_wal = value.parse::<bool>().map_err(|_| {
+                    InvalidSetRegionOptionRequestSnafu { key, value }.build()
+                })?;
+                Ok(Self::SkipWal(skip_wal))
+            }
             _ => InvalidSetRegionOptionRequestSnafu { key, value }.fail(),
         }
     }
