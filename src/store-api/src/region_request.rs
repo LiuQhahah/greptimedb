@@ -1518,9 +1518,9 @@ impl TryFrom<&PbOption> for SetRegionOption {
                 Ok(Self::MaxRowGroupRowCount(Some(row_count)))
             }
             SKIP_WAL_KEY => {
-                let skip_wal = value.parse::<bool>().map_err(|_| {
-                    InvalidSetRegionOptionRequestSnafu { key, value }.build()
-                })?;
+                let skip_wal = value
+                    .parse::<bool>()
+                    .map_err(|_| InvalidSetRegionOptionRequestSnafu { key, value }.build())?;
                 Ok(Self::SkipWal(skip_wal))
             }
             _ => InvalidSetRegionOptionRequestSnafu { key, value }.fail(),
@@ -1937,11 +1937,20 @@ mod tests {
             value: "true".to_string(),
         };
         assert_eq!(
-            SetRegionOption::SkipWal,
+            SetRegionOption::SkipWal(true),
             SetRegionOption::try_from(&pb).unwrap()
         );
 
-        for value in ["false", "", "invalid"] {
+        let pb = PbOption {
+            key: SKIP_WAL_KEY.to_string(),
+            value: "false".to_string(),
+        };
+        assert_eq!(
+            SetRegionOption::SkipWal(false),
+            SetRegionOption::try_from(&pb).unwrap()
+        );
+
+        for value in ["", "invalid"] {
             let pb = PbOption {
                 key: SKIP_WAL_KEY.to_string(),
                 value: value.to_string(),

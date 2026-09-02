@@ -361,7 +361,7 @@ fn new_region_options_on_empty_memtable(
             | SetRegionOption::Ttl(_)
             | SetRegionOption::Twsc(_, _)
             | SetRegionOption::AutoFlushInterval(_)
-            | SetRegionOption::SkipWal => (),
+            | SetRegionOption::SkipWal(_) => (),
             SetRegionOption::Format(format_str) => {
                 // Safety: handle_alter_region_options_fast() has validated this.
                 let new_format = format_str.parse::<FormatType>().unwrap();

@@ -307,7 +307,7 @@ mod test {
         // skip WAL on the physical region should be forwarded to the data region
         let alter_region_option_request = RegionAlterRequest {
             kind: AlterKind::SetRegionOptions {
-                options: vec![SetRegionOption::SkipWal],
+                options: vec![SetRegionOption::SkipWal(true)],
             },
         };
         engine_inner

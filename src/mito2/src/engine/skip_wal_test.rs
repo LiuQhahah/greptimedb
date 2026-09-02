@@ -80,7 +80,7 @@ async fn test_alter_skip_wal_stops_wal_and_flushes_on_close() {
             region_id,
             RegionRequest::Alter(RegionAlterRequest {
                 kind: AlterKind::SetRegionOptions {
-                    options: vec![SetRegionOption::SkipWal],
+                    options: vec![SetRegionOption::SkipWal(true)],
                 },
             }),
         )
@@ -91,7 +91,7 @@ async fn test_alter_skip_wal_stops_wal_and_flushes_on_close() {
             region_id,
             RegionRequest::Alter(RegionAlterRequest {
                 kind: AlterKind::SetRegionOptions {
-                    options: vec![SetRegionOption::SkipWal],
+                    options: vec![SetRegionOption::SkipWal(true)],
                 },
             }),
         )
@@ -190,7 +190,7 @@ async fn test_alter_skip_wal_on_follower_survives_promotion() {
             region_id,
             RegionRequest::Alter(RegionAlterRequest {
                 kind: AlterKind::SetRegionOptions {
-                    options: vec![SetRegionOption::SkipWal],
+                    options: vec![SetRegionOption::SkipWal(true)],
                 },
             }),
         )
